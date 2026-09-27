@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATS DKV Kelas X - CBT Online</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Screen Container -->
+  <div class="app-container">
+
+    <!-- 1. HALAMAN LOGIN -->
+    <section id="login-screen" class="screen active">
+      <div class="card login-card">
+        <div class="brand-header">
+          <i class="fa-solid fa-palette brand-icon"></i>
+          <h2>Asesmen Tengah Semester</h2>
+          <p>Dasar-Dasar Desain Komunikasi Visual (Kelas X)</p>
+        </div>
+        <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+          <div class="form-group">
+            <label for="fullname"><i class="fa-solid fa-user"></i> Nama Lengkap</label>
+            <input type="text" id="fullname" placeholder="Masukkan nama lengkap" required>
+          </div>
+          <div class="form-group">
+            <label for="student-class"><i class="fa-solid fa-school"></i> Kelas</label>
+            <select id="student-class" required>
+              <option value="">-- Pilih Kelas --</option>
+              <option value="X DKV 1">X DKV 1</option>
+              <option value="X DKV 2">X DKV 2</option>
+              <option value="X DKV 3">X DKV 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="absent-num"><i class="fa-solid fa-list-ol"></i> Nomor Absen</label>
+            <input type="number" id="absent-num" placeholder="Contoh: 15" min="1" max="50" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Masuk Ujian <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 2. HALAMAN TATA TERTIB -->
+    <section id="rules-screen" class="screen">
+      <div class="card rules-card">
+        <h3><i class="fa-solid fa-clipboard-check"></i> Tata Tertib & Petunjuk Ujian</h3>
+        <ul class="rules-list">
+          <li><i class="fa-solid fa-clock"></i> Durasi pengerjaan adalah <strong>60 menit</strong>. Timer berjalan otomatis.</li>
+          <li><i class="fa-solid fa-layer-group"></i> Soal terdiri dari <strong>50 butir HOTS</strong> (Pilihan Ganda & Ganda Kompleks).</li>
+          <li><i class="fa-solid fa-window-close"></i> <strong>Dilarang berpindah tab/browser.</strong> Peringatan sistem akan mencatat setiap pelanggaran.</li>
+          <li><i class="fa-solid fa-floppy-disk"></i> Jawaban Anda tersimpan otomatis setiap kali memilih opsi.</li>
+          <li><i class="fa-solid fa-circle-exclamation"></i> Ujian tidak dapat dipause. Waktu habis = Otomatis tersubmit.</li>
+        </ul>
+        <div class="agreement-box">
+          <input type="checkbox" id="agree-check" onchange="toggleStartBtn()">
+          <label for="agree-check">Saya telah membaca dan menyetujui seluruh tata tertib ujian di atas.</label>
+        </div>
+        <button id="start-btn" class="btn btn-primary btn-block" disabled onclick="startAssessment()">
+          Mulai Pengerjaan Ujian <i class="fa-solid fa-play"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. HALAMAN SOAL (KUIS) -->
+    <section id="quiz-screen" class="screen">
+      <!-- Sticky Header -->
+      <header class="quiz-header">
+        <div class="user-info">
+          <span id="header-name">Nama Siswa</span>
+          <small id="header-class-absent">Kelas / Absen</small>
+        </div>
+        <div class="timer-box" id="timer-box">
+          <i class="fa-solid fa-stopwatch"></i> <span id="timer-display">60:00</span>
+        </div>
+      </header>
+
+      <div class="progress-bar-container">
+        <div id="quiz-progress" class="progress-bar-fill"></div>
+      </div>
+
+      <!-- Layout Main Kuis -->
+      <div class="quiz-layout">
+        <!-- Area Soal Utama -->
+        <main class="question-container">
+          <div class="question-meta">
+            <span class="badge" id="question-category">Materi</span>
+            <span class="badge badge-type" id="question-type">Pilihan Ganda</span>
+            <span class="q-number" id="q-number-display">Soal 1 dari 50</span>
+          </div>
+
+          <!-- Stimulus Box -->
+          <div class="stimulus-box" id="stimulus-text">
+            <!-- Stimulus dimuat dinamis -->
+          </div>
+
+          <!-- Pertanyaan -->
+          <h4 class="question-text" id="question-text">Teks Pertanyaan...</h4>
+
+          <!-- Opsi Jawaban -->
+          <div class="options-container" id="options-container">
+            <!-- Pilihan dimuat dinamis -->
+          </div>
+
+          <!-- Navigasi Aksi -->
+          <div class="quiz-actions">
+            <button class="btn btn-secondary" id="prev-btn" onclick="navigateQuestion(-1)"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+            <button class="btn btn-warning" id="doubt-btn" onclick="toggleDoubt()"><i class="fa-solid fa-bookmark"></i> Ragu-Ragu</button>
+            <button class="btn btn-secondary" id="next-btn" onclick="navigateQuestion(1)">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>
+            <button class="btn btn-success" id="finish-btn" style="display:none;" onclick="confirmSubmit()">Selesai & Kirim <i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </main>
+
+        <!-- Sidebar Grid Navigasi Soal -->
+        <aside class="navigation-sidebar">
+          <h5>Peta Navigasi Soal</h5>
+          <div class="question-grid" id="question-grid">
+            <!-- Numbers 1-50 generated by JS -->
+          </div>
+          <div class="grid-legend">
+            <div><span class="legend-box answered"></span> Sudah</div>
+            <div><span class="legend-box doubt"></span> Ragu</div>
+            <div><span class="legend-box empty"></span> Belum</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 4. HALAMAN RESUME / HASIL UJIAN -->
+    <section id="result-screen" class="screen">
+      <div class="card result-card">
+        <div class="result-header">
+          <i class="fa-solid fa-trophy result-icon"></i>
+          <h2>Hasil Ujian Tengah Semester</h2>
+          <p id="result-timestamp">Diselesaikan pada: -</p>
+        </div>
+
+        <div class="result-profile-grid">
+          <div><strong>Nama:</strong> <span id="res-name">-</span></div>
+          <div><strong>Kelas / Absen:</strong> <span id="res-class-absent">-</span></div>
+          <div><strong>Waktu Tempuh:</strong> <span id="res-duration">-</span></div>
+        </div>
+
+        <div class="score-display-box">
+          <div class="score-number" id="res-score">0</div>
+          <div class="score-label">Skor Total (Skala 0-100)</div>
+          <div class="badge-grade" id="res-grade">Sangat Baik</div>
+        </div>
+
+        <div class="recap-stats">
+          <div class="stat-item green"><i class="fa-solid fa-circle-check"></i> Benar: <strong id="res-correct">0</strong></div>
+          <div class="stat-item red"><i class="fa-solid fa-circle-xmark"></i> Salah: <strong id="res-wrong">0</strong></div>
+          <div class="stat-item gray"><i class="fa-solid fa-circle-minus"></i> Kosong: <strong id="res-empty">0</strong></div>
+        </div>
+
+        <h4><i class="fa-solid fa-chart-pie"></i> Rekapitulasi Penguasaan Materi</h4>
+        <div class="category-breakdown" id="category-breakdown">
+          <!-- Stat per materi dimuat dinamis -->
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
+          <button class="btn btn-secondary" onclick="restartTest()"><i class="fa-solid fa-rotate-left"></i> Kerjakan Ulang</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
